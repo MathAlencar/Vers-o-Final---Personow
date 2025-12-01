@@ -1,14 +1,22 @@
 "use client";
 
-import { Calendar, ChevronLeft, MessageCircleMore } from "lucide-react";
+import {
+  Calendar,
+  ChevronLeft,
+  MessageCircleMore,
+  PlaneIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import PersonalAgenda from "@/app/(private)/alunos/personal/agenda";
 import createChat from "@/app/http/chat/create-chat";
+import getAllPlanoPagamento, { GetAllPlanoResponse } from "@/app/http/pagamentos/get-all-planos";
 import { getPersonalResponse } from "@/app/http/personal/get-personal";
 import { useAlunoContext } from "@/context/AlunoContext";
+
+import { PlanoIcon } from "../plano-svg";
 
 type ProfileDetailsProps = {
   personal: getPersonalResponse;
@@ -16,8 +24,30 @@ type ProfileDetailsProps = {
 
 export function ProfileDetails({ personal }: ProfileDetailsProps) {
   const router = useRouter();
-  const [openAgenda, setOpenAgenda] = useState(false);
   const { state } = useAlunoContext();
+
+  const [openAgenda, setOpenAgenda] = useState(false);
+
+  // PLANOS
+  const [planos, setPlanos] = useState<GetAllPlanoResponse[]>([]);
+  const [planoAtivo, setPlanoAtivo] = useState<string>("");
+
+  async function carregarPlanos() {
+    try {
+      const res = await getAllPlanoPagamento(String(personal.id));
+      setPlanos(res);
+
+      if (res.length > 0) {
+        setPlanoAtivo(res[0].tipo_plano); // primeira aba ativa
+      }
+    } catch (e) {
+      console.log("Erro ao carregar planos", e);
+    }
+  }
+
+  useEffect(() => {
+    carregarPlanos();
+  }, []);
 
   async function onSubmit() {
     const NewChat = {
@@ -28,16 +58,13 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
     };
 
     try {
-      const response = await createChat(NewChat);
-      console.log(response);
+      await createChat(NewChat);
       router.push(`/alunos/mensagens/${state.id}-${personal.id}`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      const errorMsg = error?.errors[0] || [];
-
+      const errorMsg = error?.errors?.[0] || "";
       if (
         errorMsg.includes(
-          "Já existe uma conversa iniciada entre este aluno e o Personal",
+          "Já existe uma conversa iniciada entre este aluno e o Personal"
         )
       ) {
         router.push(`/alunos/mensagens/${state.id}-${personal.id}`);
@@ -47,13 +74,16 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
 
   return (
     <div className="flex h-full flex-col justify-between">
+      {/* HEADER */}
       <div className="flex flex-col items-center justify-center text-white">
         <div className="text-center text-xs">
           <Image
             src={
               Array.isArray(personal.PersonalFotos) &&
               personal.PersonalFotos.length > 0
-                ? `http://34.39.211.212:3018/images/${personal.PersonalFotos.at(-1)?.filename}`
+                ? `http://34.39.211.212:3018/images/${personal.PersonalFotos.at(
+                    -1
+                  )?.filename}`
                 : "/perfil-sem-foto.png"
             }
             alt={`Foto de ${personal.nome}`}
@@ -78,7 +108,8 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[260px] flex-1 px-4 py-6 text-white md:max-w-md">
+      {/* SOBRE MIM */}
+      <div className="mx-auto  flex-1 px-4 py-6 text-white md:max-w-md">
         <div className="flex-1 overflow-auto">
           <h1 className="text-sm">Sobre mim</h1>
           <span className="break-words">{personal.descricao}</span>
@@ -107,8 +138,76 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
         </div>
       </div>
 
+      {/* PLANOS DINÂMICOS */}
+      {planos.length > 0 && (
+        <div className="mx-auto flex w-full flex-col gap-4 md:w-1/3 mt-2">
+          <div className="flex flex-row gap-4">
+          <PlanoIcon />
+          <h1 className="text-white font-semibold mb-3">Planos</h1>
+        </div>
+          <div className="rounded-xl border border-white/40 p-2 text-white">
+
+            {/* ABAS */}
+            <div className="grid grid-cols-4 text-center text-s">
+              {[
+                "Avulsa",
+                "Experimental",
+                "Mensal",
+                "Bimestral",
+                "Trimestral",
+              ]
+                .filter((tipo) =>
+                  planos.some((p) => p.tipo_plano === tipo)
+                )
+                .map((tipo) => (
+                  <button
+                    key={tipo}
+                    onClick={() => setPlanoAtivo(tipo)}
+                    className={`py-2 transition ${
+                      planoAtivo === tipo
+                        ? "border-b-2 border-orange-500 font-semibold"
+                        : "border-b border-white/30"
+                    }`}
+                  >
+                    {tipo}
+                  </button>
+                ))}
+            </div>
+
+            {/* CONTEÚDO DO PLANO */}
+            <div className="mt-4 text-center">
+              {(() => {
+                const plano = planos.find(
+                  (p) => p.tipo_plano === planoAtivo
+                );
+                if (!plano) return null;
+
+                return (
+                  <>
+                    <p className="text-sm">
+                      Plano {plano.tipo_plano} -{" "}
+                      {plano.valor.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </p>
+
+                    <button
+                      className="mt-5 w-full rounded-lg bg-[#1A131C] py-2 text-white font-semibold"
+                      onClick={() => console.log("Selecionado:", plano)}
+                    >
+                      Continuar
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* BOTÕES */}
-      <div className="mx-auto flex w-full flex-col gap-4 md:w-1/3">
+      <div className="mx-auto flex w-full flex-col gap-4 md:w-1/3 mt-6">
         <button
           onClick={onSubmit}
           className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-orange-500 p-2 text-orange-500 transition hover:bg-orange-500 hover:text-white"
@@ -117,7 +216,6 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
           Enviar mensagem
         </button>
 
-        {/* ABRIR AGENDA COM PERSONAL ID */}
         <button
           onClick={() => setOpenAgenda(true)}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 p-2 text-white transition hover:bg-orange-600"
@@ -130,7 +228,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
       {openAgenda && (
         <PersonalAgenda
           setAgenda={setOpenAgenda}
-          personalId={personal.id} // <── PASSANDO O ID DO PERSONAL
+          personalId={personal.id}
         />
       )}
     </div>
