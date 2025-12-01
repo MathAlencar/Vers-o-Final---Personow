@@ -38,28 +38,29 @@ export default function RegisterPersonal() {
 
   async function onSubmit(data: RegisterFormData) {
     try {
-      console.log("DADOS ENVIADOS:", data)
+      console.log("DADOS ENVIADOS:", data);
 
       // 1️⃣ Cadastra o usuário
-      const response = await createPersonal(data)
-      console.log('Usuário criado:', response)
+      const response = await createPersonal(data);
+      console.log("Usuário criado:", response);
 
       // 2️⃣ Faz login automático
       const loginResponse = await profilePersonal({
         email: data.email,
         password: data.password,
-      })
+      });
 
       // 3️⃣ Salva token em cookie
       setCookie("token", loginResponse.token, {
         maxAge: 60 * 60 * 24, // 1 dia
         path: "/",
-      })
+      });
 
-      localStorage.setItem("id", loginResponse.id);
+      localStorage.setItem("id", String(loginResponse.id));
 
       // 4️⃣ Redireciona para /admin
-      router.push("/admin")
+      router.push("/admin/meus-alunos");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
           console.error("Erro ao cadastrar:", error);
     

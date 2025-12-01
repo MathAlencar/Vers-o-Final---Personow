@@ -39,28 +39,30 @@ export default function RegisterAluno() {
 
   async function onSubmit(data: RegisterFormData) {
     try {
-      console.log("DADOS ENVIADOS:", data)
+      console.log("DADOS ENVIADOS:", data);
 
       // 1️⃣ Cadastra o aluno
-      const response = await createAluno(data)
-      console.log('Aluno criado:', response)
+      const response = await createAluno(data);
+      console.log("Aluno criado:", response);
 
       // 2️⃣ Faz login automático
       const loginResponse = await profileAluno({
         email: data.email,
         password: data.password,
-      })
+      });
 
       // 3️⃣ Salva token em cookie
       setCookie("token", loginResponse.token, {
         maxAge: 60 * 60 * 24, // 1 dia
         path: "/",
-      })
+      });
 
       localStorage.setItem("id", loginResponse.id);
 
       // 4️⃣ Redireciona para /alunos/home
-      router.push("/alunos/home")
+      router.push("/alunos/home");
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Erro ao cadastrar:", error);
 

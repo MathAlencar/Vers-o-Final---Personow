@@ -1,17 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  type DefaultValues,
+  DefaultValues,
   FieldValues,
   SubmitHandler,
   useForm,
-} from 'react-hook-form'
-import { ZodType, ZodTypeDef } from 'zod'
+} from "react-hook-form";
+import { ZodType } from "zod";
 
 type UseCustomFormOptions<T extends FieldValues> = {
-  schema: ZodType<T, ZodTypeDef>
-  onSubmit: SubmitHandler<T>
-  defaultValues?: DefaultValues<T>
-}
+  schema: ZodType<T>;
+  onSubmit: SubmitHandler<T>;
+  defaultValues?: DefaultValues<T>;
+};
 
 export function useCustomForm<T extends FieldValues>({
   schema,
@@ -21,14 +21,12 @@ export function useCustomForm<T extends FieldValues>({
   const form = useForm<T>({
     resolver: zodResolver(schema),
     defaultValues,
-  })
+  });
 
-  const { handleSubmit, ...methods } = form
-
-  const submitHandler = handleSubmit(onSubmit)
+  const { handleSubmit, ...methods } = form;
 
   return {
     ...methods,
-    submitHandler,
-  }
+    submitHandler: handleSubmit(onSubmit),
+  };
 }

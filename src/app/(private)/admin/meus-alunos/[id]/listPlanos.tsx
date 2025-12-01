@@ -1,4 +1,4 @@
-import { ChevronRight, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, Trash2 } from "lucide-react";
 
 import {
   dadosPlano,

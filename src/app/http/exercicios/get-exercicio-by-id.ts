@@ -9,6 +9,7 @@ export async function getExercicioById(id: number): Promise<dadosExercicio> {
       .json<{ result: dadosExercicio }>();
 
     return response.result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Erro ao buscar exercício por ID:", error);
     throw error;

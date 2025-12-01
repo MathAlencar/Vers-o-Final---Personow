@@ -37,7 +37,7 @@ export default function LoginPersonal() {
 
       localStorage.setItem("id", String(response.id));
 
-      router.push("/admin");
+      router.push("/admin/meus-alunos");
     } catch (err) {
       console.error("Erro no login:", err);
       alert("Falha no login, verifique suas credenciais.");

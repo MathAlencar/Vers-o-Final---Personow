@@ -2,7 +2,7 @@
 
 import {
   CalendarDays,
-  House,
+  // House,
   LucideBadgeDollarSign,
   MessageCircle,
   UsersIcon,
@@ -18,11 +18,11 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { PersonalContextProvider } from "@/context/PersonalContext";
 
 const items: ItemsProps[] = [
-  {
-    title: "Home",
-    url: "/admin",
-    icon: House,
-  },
+  // {
+  //   title: "Home",
+  //   url: "/admin",
+  //   icon: House,
+  // },
   {
     title: "Meus Alunos",
     url: "/admin/meus-alunos",

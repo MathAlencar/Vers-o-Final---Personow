@@ -70,7 +70,7 @@ export default function AtualizarAluno() {
         };
 
         if (dados.AlunoFotos && dados.AlunoFotos.length > 0) {
-          const urlFotos = `http://34.39.211.212:3018/images/${dados.AlunoFotos.at(-1)?.filename}`;
+          const urlFotos = `/api/proxy/images/${dados.AlunoFotos.at(-1)?.filename}`;
           setFoto(urlFotos);
         }
         reset(dados);

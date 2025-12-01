@@ -11,7 +11,6 @@ const Column = [
   { key: "id", label: "Id", searchable: true },
   { key: "nome", label: "Nome", searchable: true },
   { key: "email", label: "E-mail" },
-  { key: "plano", label: "plano" },
 ];
 
 export default function MeusAlunos() {
@@ -59,7 +58,7 @@ export default function MeusAlunos() {
       const response = await getAluno(Number(id));
       const aluno_formatado = {
         ...response,
-        data_nascimento: response.dateNascimento
+        dateNascimento: response.dateNascimento
           ? new Date(response.dateNascimento).toLocaleDateString("pt-BR", {
               day: "2-digit",
               month: "2-digit",

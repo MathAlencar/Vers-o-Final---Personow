@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import createPersonalFoto from "@/app/http/personal/create-foto-personal";
 import getPersonal from "@/app/http/personal/get-personal";
 import updatePersonal from "@/app/http/personal/update-personal";
+import { alertError, alertSuccess } from "@/components/alert";
 import { Label } from "@/components/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,11 +53,12 @@ export default function AtualizarPersonal() {
   useEffect(() => {
     async function fetchPersonal() {
       try {
+        if (state.id == 0) return;
         const response = await getPersonal(state.id.toString());
         const dados = { ...response, id: String(response.id) };
 
         if (dados.PersonalFotos && dados.PersonalFotos.length > 0) {
-          const urlFotos = `http://34.39.211.212:3018/images/${dados.PersonalFotos.at(-1)?.filename}`;
+          const urlFotos = `/api/proxy/images/${dados.PersonalFotos.at(-1)?.filename}`;
           setFoto(urlFotos);
         }
         reset(dados);
@@ -81,8 +83,9 @@ export default function AtualizarPersonal() {
         };
         await createPersonalFoto(fotoRequests);
       }
-    } catch (error) {
-      console.error("Erro ao atualizar:", error);
+      alertSuccess("Perfil atualizado com sucesso!");
+    } catch {
+      alertError("Falha na atualização.");
     }
   }
 
@@ -115,9 +118,11 @@ export default function AtualizarPersonal() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label className= "text-purple-900" htmlFor="nome">Nome completo</Label>
+              <Label className="text-purple-900" htmlFor="nome">
+                Nome completo
+              </Label>
               <Input
                 {...register("nome")}
                 id="nome"
@@ -127,7 +132,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div>
-              <Label className= "text-purple-900" htmlFor="experiencia">Experiência</Label>
+              <Label className="text-purple-900" htmlFor="experiencia">
+                Experiência
+              </Label>
               <Input
                 {...register("experiencia")}
                 id="experiencia"
@@ -137,7 +144,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div>
-              <Label className= "text-purple-900" htmlFor="cidade">Cidade</Label>
+              <Label className="text-purple-900" htmlFor="cidade">
+                Cidade
+              </Label>
               <Input
                 {...register("cidade")}
                 id="cidade"
@@ -147,7 +156,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div>
-              <Label className= "text-purple-900" htmlFor="profissao">Profissão</Label>
+              <Label className="text-purple-900" htmlFor="profissao">
+                Profissão
+              </Label>
               <Input
                 {...register("profissao")}
                 id="profissao"
@@ -157,7 +168,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div>
-              <Label className= "text-purple-900" htmlFor="formacao">Formação</Label>
+              <Label className="text-purple-900" htmlFor="formacao">
+                Formação
+              </Label>
               <Input
                 {...register("formacao")}
                 id="formacao"
@@ -167,7 +180,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div>
-              <Label className= "text-purple-900" htmlFor="areaAtuacao">Área de Atuação</Label>
+              <Label className="text-purple-900" htmlFor="areaAtuacao">
+                Área de Atuação
+              </Label>
               <Input
                 {...register("areaAtuacao")}
                 id="areaAtuacao"
@@ -177,7 +192,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div>
-              <Label className= "text-purple-900" htmlFor="modeloAtendimento">Modelo de Atendimento</Label>
+              <Label className="text-purple-900" htmlFor="modeloAtendimento">
+                Modelo de Atendimento
+              </Label>
               <Input
                 {...register("modeloAtendimento")}
                 id="modeloAtendimento"
@@ -187,7 +204,9 @@ export default function AtualizarPersonal() {
             </div>
 
             <div className="md:col-span-2">
-              <Label className= "text-purple-900" htmlFor="descricao">Descrição</Label>
+              <Label className="text-purple-900" htmlFor="descricao">
+                Descrição
+              </Label>
               <textarea
                 {...register("descricao")}
                 id="descricao"

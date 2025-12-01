@@ -1,18 +1,15 @@
 "use client";
 
-import {
-  Calendar,
-  ChevronLeft,
-  MessageCircleMore,
-  PlaneIcon,
-} from "lucide-react";
+import { Calendar, ChevronLeft, MessageCircleMore } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import PersonalAgenda from "@/app/(private)/alunos/personal/agenda";
 import createChat from "@/app/http/chat/create-chat";
-import getAllPlanoPagamento, { GetAllPlanoResponse } from "@/app/http/pagamentos/get-all-planos";
+import getAllPlanoPagamento, {
+  GetAllPlanoResponse,
+} from "@/app/http/pagamentos/get-all-planos";
 import { getPersonalResponse } from "@/app/http/personal/get-personal";
 import { useAlunoContext } from "@/context/AlunoContext";
 
@@ -60,11 +57,12 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
     try {
       await createChat(NewChat);
       router.push(`/alunos/mensagens/${state.id}-${personal.id}`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMsg = error?.errors?.[0] || "";
       if (
         errorMsg.includes(
-          "Já existe uma conversa iniciada entre este aluno e o Personal"
+          "Já existe uma conversa iniciada entre este aluno e o Personal",
         )
       ) {
         router.push(`/alunos/mensagens/${state.id}-${personal.id}`);
@@ -81,9 +79,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
             src={
               Array.isArray(personal.PersonalFotos) &&
               personal.PersonalFotos.length > 0
-                ? `http://34.39.211.212:3018/images/${personal.PersonalFotos.at(
-                    -1
-                  )?.filename}`
+                ? `/api/proxy/images/${personal.PersonalFotos.at(-1)?.filename}`
                 : "/perfil-sem-foto.png"
             }
             alt={`Foto de ${personal.nome}`}
@@ -109,7 +105,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
       </div>
 
       {/* SOBRE MIM */}
-      <div className="mx-auto  flex-1 px-4 py-6 text-white md:max-w-md">
+      <div className="mx-auto flex-1 px-4 py-6 text-white md:max-w-md">
         <div className="flex-1 overflow-auto">
           <h1 className="text-sm">Sobre mim</h1>
           <span className="break-words">{personal.descricao}</span>
@@ -140,25 +136,16 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
 
       {/* PLANOS DINÂMICOS */}
       {planos.length > 0 && (
-        <div className="mx-auto flex w-full flex-col gap-4 md:w-1/3 mt-2">
+        <div className="mx-auto mt-2 flex w-full flex-col gap-4 md:w-1/3">
           <div className="flex flex-row gap-4">
-          <PlanoIcon />
-          <h1 className="text-white font-semibold mb-3">Planos</h1>
-        </div>
+            <PlanoIcon />
+            <h1 className="mb-3 font-semibold text-white">Planos</h1>
+          </div>
           <div className="rounded-xl border border-white/40 p-2 text-white">
-
             {/* ABAS */}
-            <div className="grid grid-cols-4 text-center text-s">
-              {[
-                "Avulsa",
-                "Experimental",
-                "Mensal",
-                "Bimestral",
-                "Trimestral",
-              ]
-                .filter((tipo) =>
-                  planos.some((p) => p.tipo_plano === tipo)
-                )
+            <div className="text-s grid grid-cols-4 text-center">
+              {["Avulsa", "Experimental", "Mensal", "Bimestral", "Trimestral"]
+                .filter((tipo) => planos.some((p) => p.tipo_plano === tipo))
                 .map((tipo) => (
                   <button
                     key={tipo}
@@ -177,9 +164,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
             {/* CONTEÚDO DO PLANO */}
             <div className="mt-4 text-center">
               {(() => {
-                const plano = planos.find(
-                  (p) => p.tipo_plano === planoAtivo
-                );
+                const plano = planos.find((p) => p.tipo_plano === planoAtivo);
                 if (!plano) return null;
 
                 return (
@@ -193,7 +178,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
                     </p>
 
                     <button
-                      className="mt-5 w-full rounded-lg bg-[#1A131C] py-2 text-white font-semibold"
+                      className="mt-5 w-full rounded-lg bg-[#1A131C] py-2 font-semibold text-white"
                       onClick={() => console.log("Selecionado:", plano)}
                     >
                       Continuar
@@ -207,7 +192,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
       )}
 
       {/* BOTÕES */}
-      <div className="mx-auto flex w-full flex-col gap-4 md:w-1/3 mt-6">
+      <div className="mx-auto mt-6 flex w-full flex-col gap-4 md:w-1/3">
         <button
           onClick={onSubmit}
           className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-orange-500 p-2 text-orange-500 transition hover:bg-orange-500 hover:text-white"
@@ -226,10 +211,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
       </div>
 
       {openAgenda && (
-        <PersonalAgenda
-          setAgenda={setOpenAgenda}
-          personalId={personal.id}
-        />
+        <PersonalAgenda setAgenda={setOpenAgenda} personalId={personal.id} />
       )}
     </div>
   );
