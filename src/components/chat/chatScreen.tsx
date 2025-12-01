@@ -88,7 +88,7 @@ export function ChatScreen({ chat }: ChatScreenProps) {
               src={
                 Array.isArray(chat.usuario.usuarioFotos) &&
                 chat.usuario.usuarioFotos.length > 0
-                  ? `http://34.39.211.212:3018/images/${chat.usuario.usuarioFotos.at(-1)?.filename}`
+                  ? `/api/proxy/images/${chat.usuario.usuarioFotos.at(-1)?.filename}`
                   : "/perfil-sem-foto.png"
               }
               alt="Foto"

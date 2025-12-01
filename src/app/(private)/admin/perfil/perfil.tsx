@@ -58,7 +58,7 @@ export default function AtualizarPersonal() {
         const dados = { ...response, id: String(response.id) };
 
         if (dados.PersonalFotos && dados.PersonalFotos.length > 0) {
-          const urlFotos = `http://34.39.211.212:3018/images/${dados.PersonalFotos.at(-1)?.filename}`;
+          const urlFotos = `/api/proxy/images/${dados.PersonalFotos.at(-1)?.filename}`;
           setFoto(urlFotos);
         }
         reset(dados);

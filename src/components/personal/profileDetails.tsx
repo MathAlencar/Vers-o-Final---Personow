@@ -79,9 +79,7 @@ export function ProfileDetails({ personal }: ProfileDetailsProps) {
             src={
               Array.isArray(personal.PersonalFotos) &&
               personal.PersonalFotos.length > 0
-                ? `http://34.39.211.212:3018/images/${
-                    personal.PersonalFotos.at(-1)?.filename
-                  }`
+                ? `/api/proxy/images/${personal.PersonalFotos.at(-1)?.filename}`
                 : "/perfil-sem-foto.png"
             }
             alt={`Foto de ${personal.nome}`}
